@@ -51,7 +51,7 @@ jobs:
           pkg-manager: poetry
       - run:
           name: Typecheck the dang thing
-          command: poetry run mypy .
+          command: poetry run pyright
 workflows:
   test:
     jobs:

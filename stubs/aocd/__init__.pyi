@@ -1,14 +1,17 @@
-from typing import Any
+from typing import Any, Optional
 
 def submit(
     answer: str,
-    part: str = None,
-    day: int = None,
-    year: int = None,
-    session: Any = None,
-    reopen: bool = True,
-    quiet: bool = False,
+    part: Optional[str] = None,
+    day: Optional[int] = None,
+    year: Optional[int] = None,
+    session: Optional[Any] = None,
+    reopen: Optional[bool] = True,
+    quiet: Optional[bool] = False,
 ) -> Any: ...
 def get_data(
-    session: Any = None, day: int = None, year: int = None, block: bool = False
+    session: Any = None,
+    day: Optional[int] = None,
+    year: Optional[int] = None,
+    block: bool = False,
 ) -> str: ...

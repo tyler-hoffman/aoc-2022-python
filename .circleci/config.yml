@@ -1,66 +1,26 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-orbs:
-  python: circleci/python@1.2
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build-and-test:
+  say-hello:
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/base:stable
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: poetry
       - run:
-          name: Run tests
-          command: poetry run pytest
-  build-and-check-formatting:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - checkout
-      - python/install-packages:
-          pkg-manager: poetry
-      - run:
-          name: Check formatting with black
-          command: poetry run black --check . --target-version py310
-  build-and-check-import-sorting:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - checkout
-      - python/install-packages:
-          pkg-manager: poetry
-      - run:
-          name: Check formatting with black
-          command: poetry run isort . --check
-  build-and-check-lint:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - checkout
-      - python/install-packages:
-          pkg-manager: poetry
-      - run:
-          name: Lint with flake8
-          command: poetry run flake8 .
-  build-and-typecheck:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - checkout
-      - python/install-packages:
-          pkg-manager: poetry
-      - run:
-          name: Typecheck the dang thing
-          command: poetry run mypy .
+          name: "Say hello"
+          command: "echo Hello, World!"
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  test:
+  say-hello-workflow:
     jobs:
-      - build-and-test
-  check-formatting:
-    jobs:
-      - build-and-check-formatting
-      - build-and-check-import-sorting
-      - build-and-check-lint
-  typecheck:
-    jobs:
-      - build-and-typecheck
+      - say-hello

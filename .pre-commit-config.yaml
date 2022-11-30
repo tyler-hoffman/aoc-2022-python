@@ -1,0 +1,19 @@
+repos:
+  - repo: local
+    hooks:
+      - id: formatting
+        name: formatting
+        entry: bash -c 'poetry run black . --target-version py310 && exit 0'
+        language: system
+      - id: sorting
+        name: sorting
+        entry: bash -c 'poetry run isort . && exit 0'
+        language: system
+      - id: linting
+        name: linting
+        entry: bash -c 'poetry run flake8 . && exit 0'
+        language: system
+      - id: typechecking
+        name: typechecking
+        entry: bash -c 'poetry run pyright . && exit 0'
+        language: system

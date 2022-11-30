@@ -1,9 +1,8 @@
 ===================
 advent of code 2022
 ===================
-
-.. image:: https://dl.circleci.com/status-badge/img/gh/tyler-hoffman/aoc-2022/tree/main.svg?style=svg
-        :target: https://dl.circleci.com/status-badge/redirect/gh/tyler-hoffman/aoc-2022/tree/main
+.. image:: https://dl.circleci.com/status-badge/img/gh/tyler-hoffman/aoc-2022-python/tree/main.svg?style=svg
+        :target: https://dl.circleci.com/status-badge/redirect/gh/tyler-hoffman/aoc-2022-python/tree/main
 
 Python 3.10 edition
 

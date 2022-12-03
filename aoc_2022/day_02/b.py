@@ -2,7 +2,15 @@ from dataclasses import dataclass
 
 from aoc_2022.day_02.parser import Parser
 
-from .shared import Match, Selection
+from .shared import (
+    ABC_TO_MOVE_MAP,
+    WHAT_BEATS_WHAT_MAP,
+    WHAT_LOSES_TO_WHAT_MAP,
+    XYZ_TO_RESULT_MAP,
+    Match,
+    Move,
+    Result,
+)
 
 
 @dataclass
@@ -13,26 +21,22 @@ class Day02PartASolver:
     def solution(self) -> int:
         output = 0
         for m in self.matches:
-            match (m.a, m.b.value):
-                case Selection.ROCK, 1:
-                    output += 0 + Selection.SCISSORS.value
-                case Selection.ROCK, 2:
-                    output += 3 + Selection.ROCK.value
-                case Selection.ROCK, 3:
-                    output += 6 + Selection.PAPER.value
-                case Selection.PAPER, 1:
-                    output += 0 + Selection.ROCK.value
-                case Selection.PAPER, 2:
-                    output += 3 + Selection.PAPER.value
-                case Selection.PAPER, 3:
-                    output += 6 + Selection.SCISSORS.value
-                case Selection.SCISSORS, 1:
-                    output += 0 + Selection.PAPER.value
-                case Selection.SCISSORS, 2:
-                    output += 3 + Selection.SCISSORS.value
-                case Selection.SCISSORS, 3:
-                    output += 6 + Selection.ROCK.value
+            a = ABC_TO_MOVE_MAP[m.a]
+            result = XYZ_TO_RESULT_MAP[m.b]
+            b = self.move_for_result(a, result)
+
+            output += result.value + b.value
+
         return output
+
+    def move_for_result(self, opponent_move: Move, result: Result) -> Move:
+        match result:
+            case Result.LOSE:
+                return WHAT_BEATS_WHAT_MAP[opponent_move]
+            case Result.TIE:
+                return opponent_move
+            case Result.WIN:
+                return WHAT_LOSES_TO_WHAT_MAP[opponent_move]
 
 
 def solve(input: str) -> int:

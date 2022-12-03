@@ -1,4 +1,4 @@
-from .shared import Match, Selection
+from .shared import ABC, XYZ, Match
 
 
 class Parser(object):
@@ -7,6 +7,6 @@ class Parser(object):
         output: list[Match] = []
         for line in input.strip().splitlines():
             a, b = line.split()
-            output.append(Match(Selection.from_abc(a), Selection.from_xyz(b)))
+            output.append(Match(ABC.from_string(a), XYZ.from_string(b)))
 
         return output

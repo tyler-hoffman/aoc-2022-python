@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from aoc_2022.day_02.parser import Parser
 
-from .shared import Match, Selection
+from .shared import ABC_TO_MOVE_MAP, WHAT_BEATS_WHAT_MAP, XYZ_TO_MOVE_MAP, Match
 
 
 @dataclass
@@ -13,26 +13,15 @@ class Day02PartASolver:
     def solution(self) -> int:
         output = 0
         for m in self.matches:
-            output += m.b.value
-            match (m.a, m.b):
-                case Selection.ROCK, Selection.PAPER:
-                    output += 6
-                case Selection.ROCK, Selection.SCISSORS:
-                    output += 0
-                case Selection.ROCK, Selection.ROCK:
-                    output += 3
-                case Selection.PAPER, Selection.PAPER:
-                    output += 3
-                case Selection.PAPER, Selection.SCISSORS:
-                    output += 6
-                case Selection.PAPER, Selection.ROCK:
-                    output += 0
-                case Selection.SCISSORS, Selection.PAPER:
-                    output += 0
-                case Selection.SCISSORS, Selection.SCISSORS:
-                    output += 3
-                case Selection.SCISSORS, Selection.ROCK:
-                    output += 6
+            a = ABC_TO_MOVE_MAP[m.a]
+            b = XYZ_TO_MOVE_MAP[m.b]
+
+            output += b.value
+            if a == b:
+                output += 3
+            elif WHAT_BEATS_WHAT_MAP[b] == a:
+                output += 6
+
         return output
 
 

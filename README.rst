@@ -16,6 +16,8 @@ Notes on the repo
   * utils in the ``utils/`` derectory require `advent-of-code-data <https://github.com/wimglenn/advent-of-code-data>`_, which relies on my session cookie. So don't use those unless you are me.
   * To make refactoring safer, after completing a problem, a test will be added asserting that my input produces the right output. If you aren't me, your input/output probably don't match.
 
+* In terms of code structure, I treat the solution as a property of the problem and its inputs, modeled using dataclasses. Maybe kind of misusing them, but I kinda dig it.
+
 Getting started
 ===============
 

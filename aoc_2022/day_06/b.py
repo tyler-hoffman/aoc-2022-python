@@ -1,25 +1,10 @@
-from dataclasses import dataclass
-
 from aoc_2022.day_06.parser import Parser
-
-
-@dataclass
-class Day06PartBSolver:
-    input: str
-
-    @property
-    def solution(self) -> int:
-        n = 14
-        for i in range(len(self.input) - (n - 1)):
-            chunk = self.input[i : i + n]
-            if len(set(chunk)) == n:
-                return i + n
-        assert False, "We shouldn't get here"
+from aoc_2022.day_06.shared import Day06Solver
 
 
 def solve(input: str) -> int:
     data = Parser.parse(input)
-    solver = Day06PartBSolver(data)
+    solver = Day06Solver(data, 14)
 
     return solver.solution
 

@@ -17,6 +17,5 @@ def test_solve(input: str, expected: int):
     assert solve(input) == expected
 
 
-@pytest.mark.skip
 def test_my_solution():
     assert get_solution() == 3263

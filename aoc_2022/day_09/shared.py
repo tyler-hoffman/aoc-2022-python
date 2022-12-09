@@ -19,35 +19,26 @@ def move_knot_to_other_knot(head: Point, tail: Point) -> Point:
     x = tail.x
     y = tail.y
 
-    x_min = head.x - 1
-    x_max = head.x + 1
-    y_min = head.y - 1
-    y_max = head.y + 1
+    y_diff = tail.y - head.y
+    x_diff = tail.x - head.x
 
-    if max(abs(x - head.x), abs(y - head.y)) < 2:
+    if max(abs(x_diff), abs(y_diff)) < 2:
         return tail
-    elif x == head.x:
-        if y < y_min:
-            return Point(x, y + 1)
-        elif y > y_max:
-            return Point(x, y - 1)
-        else:
-            return tail
-    elif y == head.y:
-        if x < x_min:
-            return Point(x + 1, y)
-        elif x > x_max:
-            return Point(x - 1, y)
-        else:
-            return tail
-
-    elif x < head.x and y < head.y:
+    if x_diff == 0 and y_diff < 1:
+        return Point(x, y + 1)
+    elif x_diff == 0 and y_diff > 1:
+        return Point(x, y - 1)
+    elif y_diff == 0 and x_diff < 1:
+        return Point(x + 1, y)
+    elif y_diff == 0 and x_diff > 1:
+        return Point(x - 1, y)
+    elif x_diff < 0 and y_diff < 0:
         return Point(x + 1, y + 1)
-    elif x > head.x and y > head.y:
+    elif x_diff > 0 and y_diff > 0:
         return Point(x - 1, y - 1)
-    elif x < head.x and y > head.y:
+    elif x_diff < 0 and y_diff > 0:
         return Point(x + 1, y - 1)
-    elif x > head.x and y < head.y:
+    elif x_diff > 0 and y_diff < 0:
         return Point(x - 1, y + 1)
     else:
-        return tail
+        assert False, "we shouldn't get here"

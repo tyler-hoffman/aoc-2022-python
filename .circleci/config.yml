@@ -21,7 +21,7 @@ jobs:
           pkg-manager: poetry
       - run:
           name: Check formatting with black
-          command: poetry run black --check . --target-version py310
+          command: poetry run black --check .
   build-and-check-import-sorting:
     docker:
       - image: cimg/python:3.10

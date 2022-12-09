@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: formatting
         name: formatting
-        entry: bash -c 'poetry run black . --target-version py310 && exit 0'
+        entry: bash -c 'poetry run black . && exit 0'
         language: system
       - id: sorting
         name: sorting

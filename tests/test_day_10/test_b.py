@@ -1,5 +1,7 @@
-from aoc_2022.day_10.b import get_solution
-from aoc_2022.day_10.non_artifiial_intelligence import HumanServiceFake
+from unittest.mock import MagicMock
+
+from aoc_2022.day_10.b import get_solution, solve
+from aoc_2022.day_10.non_artifiial_intelligence import HumanService
 
 SAMPLE_DATA = """
 addx 15
@@ -150,10 +152,35 @@ noop
 noop
 """
 
+EXPECTED_VIEW = """
+##..##..##..##..##..##..##..##..##..##..
+###...###...###...###...###...###...###.
+####....####....####....####....####....
+#####.....#####.....#####.....#####.....
+######......######......######......####
+#######.......#######.......#######.....
+""".strip()
+
+
+def test_example():
+    """Tests we pass the correct prompt to the human service"""
+    arbitrary_human_response = "idk"
+
+    fake_human_service = MagicMock(spec_set=HumanService)
+    fake_human_service.query.return_value = arbitrary_human_response
+
+    output = solve(SAMPLE_DATA, fake_human_service)
+
+    assert output == arbitrary_human_response
+    fake_human_service.query.assert_called_once_with(EXPECTED_VIEW)
+
 
 def test_my_solution():
     """Perhaps the most meaningful test in this repo"""
 
     what_human_sees = "EALGULPG"
-    fake_human_service = HumanServiceFake(what_human_sees)
+
+    fake_human_service = MagicMock(spec_set=HumanService)
+    fake_human_service.query.return_value = what_human_sees
+
     assert get_solution(fake_human_service) == what_human_sees

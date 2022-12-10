@@ -11,7 +11,10 @@ jobs:
           pkg-manager: poetry
       - run:
           name: Run tests
-          command: poetry run pytest
+          command: |
+            echo "$GIT_CRYPT_KEY" | base64 -d > git-crypt.key
+            git-crypt unlock git-crypt.key
+            poetry run pytest
   build-and-check-formatting:
     docker:
       - image: cimg/python:3.10

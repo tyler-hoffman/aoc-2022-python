@@ -12,10 +12,10 @@ class Noop:
     ...
 
 
-Operation = Union[Addx, Noop]
+Instruction = Union[Addx, Noop]
 
 
-@dataclass
+@dataclass(frozen=True)
 class State:
     t: int
     x: int

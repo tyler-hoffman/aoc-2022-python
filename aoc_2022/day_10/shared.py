@@ -1,9 +1,10 @@
 from typing import Iterable
 
-from aoc_2022.day_10.models import Addx, Noop, Operation, State
+from aoc_2022.day_10.models import Addx, Instruction, Noop, State
 
 
-def get_state_at_time(instructions: list[Operation]) -> Iterable[State]:
+def get_state_at_time(instructions: list[Instruction]) -> Iterable[State]:
+    """Generator to get all register-value : time pairs"""
     t = 1
     x = 1
 

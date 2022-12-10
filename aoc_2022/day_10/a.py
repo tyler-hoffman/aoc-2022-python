@@ -1,20 +1,19 @@
 from dataclasses import dataclass
 
-from aoc_2022.day_10.models import Operation
+from aoc_2022.day_10.models import Instruction
 from aoc_2022.day_10.parser import Parser
 from aoc_2022.day_10.shared import get_state_at_time
 
 
 @dataclass
 class Day10PartASolver:
-    instructions: list[Operation]
+    instructions: list[Instruction]
 
     @property
     def solution(self) -> int:
-        states = [
-            s for s in get_state_at_time(self.instructions) if self.is_target_time(s.t)
-        ]
-        signal_strengths = [s.signal_strength for s in states]
+        states = [s for s in get_state_at_time(self.instructions)]
+        target_states = [s for s in states if self.is_target_time(s.t)]
+        signal_strengths = [s.signal_strength for s in target_states]
         return sum(signal_strengths)
 
     def is_target_time(self, t: int) -> bool:

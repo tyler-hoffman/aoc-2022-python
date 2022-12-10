@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from aoc_2022.day_10.models import Operation, State
+from aoc_2022.day_10.models import Instruction, State
 from aoc_2022.day_10.non_artifiial_intelligence import HumanService
 from aoc_2022.day_10.parser import Parser
 from aoc_2022.day_10.shared import get_state_at_time
@@ -9,7 +9,7 @@ from aoc_2022.day_10.shared import get_state_at_time
 
 @dataclass
 class Day10PartBSolver:
-    instructions: list[Operation]
+    instructions: list[Instruction]
     human_service: HumanService
 
     @property

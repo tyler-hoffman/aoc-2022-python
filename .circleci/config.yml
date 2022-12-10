@@ -9,12 +9,13 @@ jobs:
       - checkout
       - python/install-packages:
           pkg-manager: poetry
+      - run: sudo apt-get update
+      - run: sudo apt-get install git-crypt
+      - run: echo "$GIT_CRYPT_KEY" | base64 -d > git-crypt.key
+      - run: git-crypt unlock git-crypt.key
       - run:
           name: Run tests
-          command: |
-            echo "$GIT_CRYPT_KEY" | base64 -d > git-crypt.key
-            git-crypt unlock git-crypt.key
-            poetry run pytest
+          command: poetry run pytest
   build-and-check-formatting:
     docker:
       - image: cimg/python:3.10

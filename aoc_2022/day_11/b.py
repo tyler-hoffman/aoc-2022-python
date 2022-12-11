@@ -1,28 +1,12 @@
-from dataclasses import dataclass
 from functools import cached_property
 
-from aoc_2022.day_11.models import Monkey
 from aoc_2022.day_11.parser import Parser
+from aoc_2022.day_11.shared import Day11Solver
 
 
-@dataclass
-class Day11PartBSolver:
-    monkeys: list[Monkey]
-
-    @property
-    def solution(self) -> int:
-        for _ in range(10000):
-            for m in self.monkeys:
-                while m.items:
-                    item = m.items.pop(0)
-                    item = m.operation(item) % self.divisor
-                    if item % m.divisible_test == 0:
-                        self.monkeys[m.on_true].items.append(item)
-                    else:
-                        self.monkeys[m.on_false].items.append(item)
-                    m.yeets += 1
-        yeets = sorted([m.yeets for m in self.monkeys])
-        return yeets[-1] * yeets[-2]
+class Day11PartBSolver(Day11Solver):
+    def manager_worry_level(self, worry_level: int) -> int:
+        return worry_level % self.divisor
 
     @cached_property
     def divisor(self) -> int:
@@ -34,7 +18,7 @@ class Day11PartBSolver:
 
 def solve(input: str) -> int:
     data = Parser.parse(input)
-    solver = Day11PartBSolver(data)
+    solver = Day11PartBSolver(data, 10000)
 
     return solver.solution
 

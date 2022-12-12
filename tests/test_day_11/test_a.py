@@ -1,5 +1,3 @@
-import pytest
-
 from aoc_2022.day_11.a import get_solution, solve
 
 SAMPLE_DATA = """
@@ -37,6 +35,5 @@ def test_solve():
     assert solve(SAMPLE_DATA) == 10605
 
 
-@pytest.mark.skip
 def test_my_solution():
     assert get_solution() == 72884

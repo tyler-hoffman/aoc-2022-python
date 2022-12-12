@@ -1,10 +1,10 @@
-from collections import deque
 from dataclasses import dataclass
 from functools import cached_property
-from typing import Iterator, Mapping, Optional
+from typing import Optional
 
-from aoc_2022.day_12.models import Map, Point
-from aoc_2022.day_12.parser import CHARACTER_TO_HEIGHT_MAP, Parser
+from aoc_2022.day_12.models import Point
+from aoc_2022.day_12.parser import Parser
+from aoc_2022.day_12.shared import Day12Solver
 
 
 @dataclass
@@ -13,10 +13,7 @@ class PointInfo:
     previous: Optional[Point]
 
 
-@dataclass
-class Day12PartASolver:
-    data: Map
-
+class Day12PartASolver(Day12Solver):
     @property
     def solution(self) -> int:
         return min(
@@ -27,6 +24,13 @@ class Day12PartASolver:
             ]
         )
 
+    @property
+    def start(self) -> Point:
+        return self.data.target
+
+    def can_move(self, from_height: int, to_height: int) -> bool:
+        return to_height >= from_height - 1
+
     @cached_property
     def possible_starts(self) -> set[Point]:
         return {
@@ -35,42 +39,7 @@ class Day12PartASolver:
 
     @cached_property
     def min_height(self) -> int:
-        return min(CHARACTER_TO_HEIGHT_MAP.values())
-
-    @cached_property
-    def point_info(self) -> Mapping[Point, PointInfo]:
-        output: dict[Point, PointInfo] = {self.data.target: PointInfo(0, None)}
-        to_check = deque[Point]([self.data.target])
-
-        while to_check:
-            current = to_check.pop()
-            current_info = output[current]
-            for p in self.next_points(current):
-                next_info = output.get(p)
-                if (
-                    not next_info
-                    or next_info.min_distance > current_info.min_distance + 1
-                ):
-                    output[p] = PointInfo(current_info.min_distance + 1, current)
-                    to_check.append(p)
-
-        return output
-
-    def next_points(self, current: Point) -> Iterator[Point]:
-        for move in self.possible_moves:
-            p = Point(current.x + move.x, current.y + move.y)
-            p_height = self.data.heightmap.get(p)
-            if p_height is not None and p_height >= self.data.heightmap[current] - 1:
-                yield p
-
-    @cached_property
-    def possible_moves(self) -> set[Point]:
-        return {
-            Point(-1, 0),
-            Point(1, 0),
-            Point(0, -1),
-            Point(0, 1),
-        }
+        return min(self.data.heightmap.values())
 
 
 def solve(input: str) -> int:

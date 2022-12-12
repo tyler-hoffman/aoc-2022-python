@@ -1,16 +1,32 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
-from collections import deque
 from dataclasses import dataclass
-from functools import cached_property
-from typing import Iterator, Mapping, Optional
+from functools import cached_property, total_ordering
+from queue import PriorityQueue
+from typing import Any, Iterator, Mapping, Optional
 
 from aoc_2022.day_12.models import Map, Point
 
 
-@dataclass
+@total_ordering
+@dataclass(frozen=True)
 class PointInfo:
     min_distance: int
-    previous: Optional[Point]
+    previous: Optional[PointInfo]
+    point: Point
+
+    def __lt__(self, other: Any) -> bool:
+        if isinstance(other, PointInfo):
+            return self.min_distance < other.min_distance
+        else:
+            return False
+
+    def total_distance(self) -> int:
+        if self.previous:
+            return 1 + self.previous.total_distance()
+        else:
+            return 0
 
 
 @dataclass
@@ -33,20 +49,23 @@ class Day12Solver(ABC):
 
     @cached_property
     def point_info(self) -> Mapping[Point, PointInfo]:
-        output: dict[Point, PointInfo] = {self.start: PointInfo(0, None)}
-        to_check = deque[Point]([self.start])
+        output: dict[Point, PointInfo] = {self.start: PointInfo(0, None, self.start)}
+        to_check: PriorityQueue[PointInfo] = PriorityQueue()
+        to_check.put(output[self.start])
 
-        while to_check:
-            current = to_check.pop()
-            current_info = output[current]
-            for p in self.next_points(current):
+        while not to_check.empty():
+            current = to_check.get()
+            current_info = output[current.point]
+            for p in self.next_points(current.point):
                 next_info = output.get(p)
                 if (
                     not next_info
                     or next_info.min_distance > current_info.min_distance + 1
                 ):
-                    output[p] = PointInfo(current_info.min_distance + 1, current)
-                    to_check.append(p)
+                    output[p] = PointInfo(
+                        current_info.min_distance + 1, current_info, p
+                    )
+                    to_check.put(output[p])
 
         return output
 

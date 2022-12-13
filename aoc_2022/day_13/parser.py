@@ -14,4 +14,35 @@ class Parser(object):
 
     @staticmethod
     def parse_packet(line: str) -> Packet:
-        return eval(line)
+        """An overengineered packet parser (given the problem)
+
+        We could just as easily just return eval(line), but
+        that's not so great in general, so we're doing it the
+        hard way
+        """
+
+        packet, length = Parser.parse_subpacket(line, 0)
+        assert length == len(line)
+        return packet
+
+    @staticmethod
+    def parse_subpacket(line: str, index: int) -> tuple[Packet, int]:
+        assert line[index] == "["
+
+        output: Packet = []
+        index += 1
+
+        while line[index] != "]":
+            if line[index] == "[":
+                element, index = Parser.parse_subpacket(line, index)
+                output.append(element)
+            elif line[index] == ",":
+                index += 1
+            else:
+                terminal_indices = [line.find(ch, index) for ch in {",", "[", "]"}]
+                end = min([x for x in terminal_indices if x >= 0])
+                output.append(int(line[index:end]))
+                index = end
+
+        index += 1
+        return output, index

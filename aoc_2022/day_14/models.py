@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import cached_property
 from typing import Optional, Sequence
 
@@ -9,6 +9,7 @@ from typing import Optional, Sequence
 @dataclass
 class State(ABC):
     paths: Sequence[Path]
+    known_path: list[Point] = field(default_factory=lambda: [Point(500, 0)], init=False)
 
     def drop_sand(self) -> Optional[Point]:
         """Drop a grain of sand.
@@ -16,9 +17,15 @@ class State(ABC):
         didn't fall into the void. Otherwise returns
         None.
         """
-        x = 500
-        y = 0
-        while y <= self.max_depth + 2:
+        start = self.known_path.pop()
+        while start in self.occupied:
+            start = self.known_path.pop()
+
+        x = start.x
+        y = start.y
+
+        while y <= self.max_depth + 10:
+            self.known_path.append(Point(x, y))
 
             if self.floor_depth is not None and y + 1 == self.floor_depth:
                 point = Point(x, y)
@@ -36,6 +43,7 @@ class State(ABC):
                     return point
 
             y += 1
+
         return None
 
     @cached_property

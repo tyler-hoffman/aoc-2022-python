@@ -1,10 +1,10 @@
-from aoc_2022.day_14.models import Path, Point, State
+from aoc_2022.day_14.models import Path, Point
 
 
 class Parser(object):
     @staticmethod
-    def parse(input: str) -> State:
-        return State([Parser.parse_line(line) for line in input.strip().splitlines()])
+    def parse(input: str) -> list[Path]:
+        return [Parser.parse_line(line) for line in input.strip().splitlines()]
 
     @staticmethod
     def parse_line(line: str) -> Path:

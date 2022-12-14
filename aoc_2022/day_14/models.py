@@ -1,33 +1,42 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from functools import cached_property
-from typing import Sequence
+from typing import Optional, Sequence
 
 
 @dataclass
-class State:
+class State(ABC):
     paths: Sequence[Path]
 
-    def drop_sand(self) -> bool:
+    def drop_sand(self) -> Optional[Point]:
         """Drop a grain of sand.
-        Returns True if we are able to place
-        the sand. Returns false if the sand falls
-        into the void
+        Returns the point the grain landed at if it
+        didn't fall into the void. Otherwise returns
+        None.
         """
         x = 500
         y = 0
-        while y <= self.max_depth:
-            if Point(x, y + 1) in self.occupied:
+        while y <= self.max_depth + 2:
+
+            if self.floor_depth is not None and y + 1 == self.floor_depth:
+                point = Point(x, y)
+                self.occupied.add(point)
+                return point
+
+            elif Point(x, y + 1) in self.occupied:
                 if Point(x - 1, y + 1) not in self.occupied:
                     x -= 1
                 elif Point(x + 1, y + 1) not in self.occupied:
                     x += 1
                 else:
-                    self.occupied.add(Point(x, y))
-                    return True
+                    point = Point(x, y)
+                    self.occupied.add(point)
+                    return point
+
             y += 1
-        return False
+        return None
 
     @cached_property
     def occupied(self) -> set[Point]:
@@ -58,6 +67,23 @@ class State:
                 current = p
 
         return output
+
+    @property
+    @abstractmethod
+    def floor_depth(self) -> Optional[int]:
+        ...
+
+
+class StateWithoutFloor(State):
+    @property
+    def floor_depth(self) -> None:
+        return None
+
+
+class StateWithFloor(State):
+    @property
+    def floor_depth(self) -> int:
+        return self.max_depth + 2
 
 
 @dataclass

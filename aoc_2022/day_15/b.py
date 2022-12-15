@@ -6,17 +6,21 @@ from aoc_2022.day_15.parser import Parser
 
 
 @dataclass
-class Day15PartASolver:
+class Day15PartBSolver:
     sensors: list[Sensor]
-    y: int
+    max_coordinate: int
+    min_coordinate: int = 0
 
     @property
     def solution(self) -> int:
-        ranges = self.covered_x_ranges_for_y(self.y)
-        beacon_xs = {p.x for p in self.beacons_at_y(self.y)}
+        for y in range(self.min_coordinate, self.max_coordinate + 1):
+            x_ranges = self.covered_x_ranges_for_y(y)
+            if len(x_ranges) == 2:
+                return self.tuning_fequency(Point(x_ranges[0].high + 1, y))
+        assert False, "We shouldn't get here lol"
 
-        range_total = sum(r.count for r in ranges)
-        return range_total - len(beacon_xs)
+    def tuning_fequency(self, point: Point) -> int:
+        return point.x * 4000000 + point.y
 
     @cached_property
     def beacon_positions(self) -> set[Point]:
@@ -42,9 +46,9 @@ class Day15PartASolver:
         return output
 
 
-def solve(input: str, y: int) -> int:
+def solve(input: str, max_coordinate: int) -> int:
     data = Parser.parse(input)
-    solver = Day15PartASolver(data, y)
+    solver = Day15PartBSolver(data, max_coordinate)
 
     return solver.solution
 
@@ -52,7 +56,7 @@ def solve(input: str, y: int) -> int:
 def get_solution() -> int:
     with open("aoc_2022/day_15/input.txt", "r") as f:
         input = f.read()
-    return solve(input, 2000000)
+    return solve(input, 4000000)
 
 
 if __name__ == "__main__":

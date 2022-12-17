@@ -24,6 +24,8 @@ SHAPES_STRING = """
 ##
 """
 
+Row = tuple[bool, bool, bool, bool, bool, bool, bool]
+
 
 class ShapeParser:
     @staticmethod
@@ -67,11 +69,47 @@ class Day17Solver:
 
     @property
     def solution(self) -> int:
-        for _ in range(self.iterations):
-            self.drop_next_shape()
-        return self.highest_rock + 1
+        time = 0
+        skipped_height = 0
+        skipped_cycles = False
+        while time < self.iterations:
+            resting_place = self.drop_next_shape()
+            self.land_shape(resting_place, time)
+            if not skipped_cycles:
+                top = self.get_top(min({p.y for p in resting_place.points}))
+                key = (self.shape_index, self.jet_index, top)
+                if key in self.cached_tops:
+                    previous_time, previous_highest = self.cached_tops[key]
+                    cycle_length = time - previous_time
+                    height_per_cycle = self.highest_rock - previous_highest
+                    remaining_cycles = (self.iterations - 1 - time) // cycle_length
+                    time += remaining_cycles * cycle_length
+                    skipped_height = remaining_cycles * height_per_cycle
+                    skipped_cycles = True
+                else:
+                    self.cached_tops[key] = (time, self.highest_rock)
+            time += 1
+        return self.highest_rock + 1 + skipped_height
 
-    def drop_next_shape(self) -> None:
+    @cached_property
+    def cached_tops(self) -> dict[tuple[int, int, tuple[Row, ...]], tuple[int, int]]:
+        return {}
+
+    def get_top(self, lowest_y: int) -> tuple[Row, ...]:
+        if self.highest_rock - lowest_y > 100:
+            assert False
+        rows = [self.get_row(y) for y in range(lowest_y, self.highest_rock + 1)]
+        return tuple(rows)
+
+    def land_shape(self, shape: Shape, time: int) -> None:
+        ys = {p.y for p in shape.points}
+
+        for p in shape.points:
+            self.landed_rocks.add(p)
+
+        self.highest_rock = max([self.highest_rock] + list(ys))
+
+    def drop_next_shape(self) -> Shape:
         self.shape_index += 1
         self.shape_index %= len(SHAPES)
         shape = SHAPES[self.shape_index]
@@ -91,12 +129,10 @@ class Day17Solver:
             if self.is_valid_position(next_shape):
                 shape = next_shape
             else:
-                for p in shape.points:
-                    self.landed_rocks.add(p)
-                self.highest_rock = max(
-                    [self.highest_rock] + [p.y for p in shape.points]
-                )
-                break
+                return shape
+
+    def get_row(self, y: int) -> Row:
+        return tuple([Point(x, y) in self.landed_rocks for x in range(7)])
 
     def is_valid_position(self, shape: Shape) -> bool:
         return all(

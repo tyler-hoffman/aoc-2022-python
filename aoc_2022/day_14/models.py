@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 from functools import cached_property
 from typing import Optional, Sequence
 
+from aoc_2022.shared.models import Point
+
 
 @dataclass
 class State(ABC):
@@ -85,9 +87,3 @@ class State(ABC):
 @dataclass
 class Path:
     points: Sequence[Point]
-
-
-@dataclass(frozen=True)
-class Point:
-    x: int
-    y: int

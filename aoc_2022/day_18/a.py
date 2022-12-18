@@ -1,7 +1,8 @@
 from dataclasses import dataclass
+from functools import cached_property
 from typing import Iterator
 
-from aoc_2022.day_18.models import Point3D
+from aoc_2022.day_18.models import Point3D, SidePosition3D
 from aoc_2022.day_18.parser import Parser
 
 
@@ -11,22 +12,19 @@ class Day18PartASolver:
 
     @property
     def solution(self) -> int:
-        freq_map: dict[Point3D, int] = {}
-        for side in self.sides():
+        freq_map: dict[SidePosition3D, int] = {}
+        for side in self.sides:
             if side not in freq_map:
                 freq_map[side] = 0
             freq_map[side] += 1
 
         return len([count for count in freq_map.values() if count == 1])
 
-    def sides(self) -> Iterator[Point3D]:
+    @cached_property
+    def sides(self) -> Iterator[SidePosition3D]:
         for p in self.points:
-            yield Point3D(p.x * 2, p.y * 2, p.z * 2 - 1)
-            yield Point3D(p.x * 2, p.y * 2, p.z * 2 + 1)
-            yield Point3D(p.x * 2, p.y * 2 - 1, p.z * 2)
-            yield Point3D(p.x * 2, p.y * 2 + 1, p.z * 2)
-            yield Point3D(p.x * 2 - 1, p.y * 2, p.z * 2)
-            yield Point3D(p.x * 2 + 1, p.y * 2, p.z * 2)
+            for side in p.sides:
+                yield side
 
 
 def solve(input: str) -> int:

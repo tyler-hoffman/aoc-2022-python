@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from typing import Collection
 
-from aoc_2022.day_18.models import Point3D
+from aoc_2022.day_18.models import Point3D, SidePosition3D
 from aoc_2022.day_18.parser import Parser
 
 
@@ -19,30 +19,12 @@ class Day18PartBSolver:
 
     @cached_property
     def outside_points(self) -> set[Point3D]:
-        seen: set[Point3D] = set()
-        to_check: list[Point3D] = []
-
-        for x in range(self.bounds_min.x - 1, self.bounds_max.x + 2):
-            for y in range(self.bounds_min.y - 1, self.bounds_max.y + 2):
-                for z in range(self.bounds_min.z - 1, self.bounds_max.z + 2):
-                    if any(
-                        [
-                            x == self.bounds_min.x - 1,
-                            x == self.bounds_max.x + 1,
-                            y == self.bounds_min.y - 1,
-                            y == self.bounds_max.y + 1,
-                            z == self.bounds_min.z - 1,
-                            z == self.bounds_max.z + 1,
-                        ]
-                    ):
-                        p = Point3D(x, y, z)
-                        if p not in seen:
-                            seen.add(p)
-                            to_check.append(p)
+        seen: set[Point3D] = set(self.edges_of_bounding_box)
+        to_check: list[Point3D] = list(self.edges_of_bounding_box)
 
         while to_check:
             start = to_check.pop()
-            for p in self.neighbors(start):
+            for p in start.neighbors:
                 if all(
                     [
                         p not in seen,
@@ -55,15 +37,27 @@ class Day18PartBSolver:
 
         return seen
 
-    def neighbors(self, p: Point3D) -> list[Point3D]:
-        return [
-            Point3D(p.x, p.y, p.z - 1),
-            Point3D(p.x, p.y, p.z + 1),
-            Point3D(p.x, p.y - 1, p.z),
-            Point3D(p.x, p.y + 1, p.z),
-            Point3D(p.x - 1, p.y, p.z),
-            Point3D(p.x + 1, p.y, p.z),
-        ]
+    @cached_property
+    def edges_of_bounding_box(self) -> set[Point3D]:
+        output: set[Point3D] = set()
+
+        for x in range(self.bounds_min.x - 1, self.bounds_max.x + 2):
+            for y in range(self.bounds_min.y - 1, self.bounds_max.y + 2):
+                for z in (self.bounds_min.z - 1, self.bounds_max.z + 1):
+                    p = Point3D(x, y, z)
+                    output.add(p)
+        for x in range(self.bounds_min.x - 1, self.bounds_max.x + 2):
+            for y in (self.bounds_min.y - 1, self.bounds_max.y + 1):
+                for z in range(self.bounds_min.z - 1, self.bounds_max.z + 2):
+                    p = Point3D(x, y, z)
+                    output.add(p)
+        for x in (self.bounds_min.x - 1, self.bounds_max.x + 1):
+            for y in range(self.bounds_min.y - 1, self.bounds_max.y + 2):
+                for z in range(self.bounds_min.z - 1, self.bounds_max.z + 2):
+                    p = Point3D(x, y, z)
+                    output.add(p)
+
+        return output
 
     def in_bounds(self, p: Point3D) -> bool:
         return all(
@@ -95,20 +89,11 @@ class Day18PartBSolver:
     def points_set(self) -> set[Point3D]:
         return {p for p in self.points}
 
-    def sides(self, points: Collection[Point3D]) -> set[Point3D]:
-        output: set[Point3D] = set()
+    def sides(self, points: Collection[Point3D]) -> set[SidePosition3D]:
+        output: set[SidePosition3D] = set()
         for p in points:
-            output.add(Point3D(p.x * 2, p.y * 2, p.z * 2 - 1))
-            output.add(Point3D(p.x * 2, p.y * 2, p.z * 2 + 1))
-            output.add(Point3D(p.x * 2, p.y * 2 - 1, p.z * 2))
-            output.add(Point3D(p.x * 2, p.y * 2 + 1, p.z * 2))
-            output.add(Point3D(p.x * 2 - 1, p.y * 2, p.z * 2))
-            output.add(Point3D(p.x * 2 + 1, p.y * 2, p.z * 2))
+            output.update(p.sides)
         return output
-
-    @cached_property
-    def expanded_points(self) -> list[Point3D]:
-        return [Point3D(p.x * 2, p.y * 2, p.z * 2) for p in self.points]
 
 
 def solve(input: str) -> int:

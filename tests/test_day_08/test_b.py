@@ -1,8 +1,8 @@
 import pytest
 
 from aoc_2022.day_08.b import Day08PartBSolver, get_solution
-from aoc_2022.day_08.models import Point
 from aoc_2022.day_08.parser import Parser
+from aoc_2022.shared.models import Point
 
 SAMPLE_DATA = """
 30373

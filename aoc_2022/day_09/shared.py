@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import Iterator
 
-from aoc_2022.day_09.models import Movement, Point
+from aoc_2022.day_09.models import Movement
+from aoc_2022.shared.models import Point
 
 
 @dataclass
@@ -14,7 +15,7 @@ class Day09Solver:
         return len(set(self.get_tail_positions()))
 
     def get_tail_positions(self) -> Iterator[Point]:
-        knots = [Point() for _ in range(self.knot_count)]
+        knots = [Point(0, 0) for _ in range(self.knot_count)]
 
         yield knots[-1]
 

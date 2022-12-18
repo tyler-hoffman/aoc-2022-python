@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from functools import cached_property
 from typing import Mapping
 
-from aoc_2022.day_08.models import Point
 from aoc_2022.day_08.parser import Parser
+from aoc_2022.shared.models import Point
 
 
 @dataclass

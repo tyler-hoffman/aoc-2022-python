@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from functools import cached_property
 from typing import Optional
 
+from aoc_2022.shared.models import Point
+
 
 @dataclass
 class Range:
@@ -14,12 +16,6 @@ class Range:
     @property
     def count(self) -> int:
         return self.high - self.low + 1
-
-
-@dataclass(frozen=True)
-class Point:
-    x: int
-    y: int
 
 
 @dataclass(frozen=True)

@@ -1,6 +1,6 @@
 from typing import Mapping
 
-from aoc_2022.day_08.models import Point
+from aoc_2022.shared.models import Point
 
 
 class Parser(object):

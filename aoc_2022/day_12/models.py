@@ -1,11 +1,7 @@
 from dataclasses import dataclass
 from typing import Mapping
 
-
-@dataclass(frozen=True)
-class Point:
-    x: int
-    y: int
+from aoc_2022.shared.models import Point
 
 
 @dataclass

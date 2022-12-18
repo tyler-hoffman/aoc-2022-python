@@ -9,6 +9,7 @@ jobs:
       - checkout
       - python/install-packages:
           pkg-manager: poetry
+          args: --no-ansi
       - run: sudo apt-get update
       - run: sudo apt-get install git-crypt
       - run: echo "$GIT_CRYPT_KEY" | base64 -d > ~/git-crypt.key

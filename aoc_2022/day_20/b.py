@@ -6,18 +6,19 @@ from aoc_2022.day_20.parser import Parser
 
 
 @dataclass
-class Day20PartASolver:
+class Day20PartBSolver:
     values: list[int]
 
     @property
     def solution(self) -> int:
         nodes = self.linked_list_nodes(self.linked_list)
-        for start in nodes:
-            node = start
-            if node.value < 0:
-                node.move(-(abs(node.value) % (self.length - 1)))
-            elif node.value > 0:
-                node.move(node.value % (self.length - 1))
+        for _ in range(10):
+            for start in nodes:
+                node = start
+                if node.value < 0:
+                    node.move(-(abs(node.value) % (self.length - 1)))
+                elif node.value > 0:
+                    node.move(node.value % (self.length - 1))
 
         node = self.linked_list.rotate_to(0)
         output = 0
@@ -51,13 +52,18 @@ class Day20PartASolver:
 
     @cached_property
     def linked_list(self) -> CircularLinkedList:
-        head = CircularLinkedList(self.values[0])
+        values = self.multiplied_values
+        head = CircularLinkedList(values[0])
         node = head
 
-        for value in self.values[1:]:
+        for value in values[1:]:
             node = node.add(value)
 
         return head
+
+    @cached_property
+    def multiplied_values(self) -> list[int]:
+        return [x * 811589153 for x in self.values]
 
     @cached_property
     def length(self) -> int:
@@ -70,7 +76,7 @@ class Day20PartASolver:
 
 def solve(input: str) -> int:
     data = Parser.parse(input)
-    solver = Day20PartASolver(data)
+    solver = Day20PartBSolver(data)
 
     return solver.solution
 

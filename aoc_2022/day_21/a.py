@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from functools import cached_property
 from typing import Mapping
 
+from aoc_2022.day_21.models import ConstantMonkey, Monkey, OperationMonkey
 from aoc_2022.day_21.parser import Parser
-from tests.test_day_21.models import ConstantMonkey, Monkey, OperationMonkey
 
 
 @dataclass
@@ -12,6 +12,7 @@ class Day21PartASolver:
 
     @property
     def solution(self) -> int:
+        self.monkey_dict["root"]
         return self.get_monkey_value("root")
 
     def get_monkey_value(self, name: str) -> int:

@@ -1,4 +1,4 @@
-from tests.test_day_21.models import ConstantMonkey, Monkey, OperationMonkey
+from aoc_2022.day_21.models import ConstantMonkey, Monkey, OperationMonkey
 
 
 class Parser(object):

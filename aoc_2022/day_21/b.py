@@ -1,15 +1,13 @@
-from dataclasses import dataclass, field
-from functools import cache, cached_property
-from typing import Mapping
+from dataclasses import dataclass
+from functools import cache
 
-from aoc_2022.day_21.models import ConstantMonkey, Monkey, OperationMonkey
+from aoc_2022.day_21.models import ConstantMonkey, OperationMonkey
 from aoc_2022.day_21.parser import Parser
+from aoc_2022.day_21.shared import Day21Solver
 
 
 @dataclass(frozen=True)
-class Day21PartASolver:
-    monkey_list: list[Monkey] = field(hash=False)
-
+class Day21PartASolver(Day21Solver):
     @property
     def solution(self) -> int:
         a = self.root.a
@@ -64,35 +62,6 @@ class Day21PartASolver:
             return False
         else:
             return self.contains(m.a, target) or self.contains(m.b, target)
-
-    @cached_property
-    def root(self) -> OperationMonkey:
-        root = self.monkey_dict["root"]
-        assert isinstance(root, OperationMonkey)
-        return root
-
-    def get_monkey_value(self, name: str) -> int:
-        m = self.monkey_dict[name]
-
-        match m:
-            case ConstantMonkey(value=value):
-                return value
-            case OperationMonkey(a=a, operation=operation, b=b):
-                match operation:
-                    case "+":
-                        return self.get_monkey_value(a) + self.get_monkey_value(b)
-                    case "-":
-                        return self.get_monkey_value(a) - self.get_monkey_value(b)
-                    case "*":
-                        return self.get_monkey_value(a) * self.get_monkey_value(b)
-                    case "/":
-                        return self.get_monkey_value(a) // self.get_monkey_value(b)
-                    case _:
-                        assert False
-
-    @cached_property
-    def monkey_dict(self) -> Mapping[str, Monkey]:
-        return {m.name: m for m in self.monkey_list}
 
 
 def solve(input: str) -> int:

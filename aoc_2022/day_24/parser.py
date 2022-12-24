@@ -1,16 +1,5 @@
-from dataclasses import dataclass
-
-from aoc_2022.day_24.models import Blizzard, Direction
+from aoc_2022.day_24.models import Blizzard, Direction, Map
 from aoc_2022.shared.models import Point
-
-
-@dataclass
-class Map:
-    blizzards: list[Blizzard]
-    start: Point
-    end: Point
-    width: int
-    height: int
 
 
 class Parser(object):
@@ -38,7 +27,7 @@ class Parser(object):
                     case "<":
                         blizzards.append(Blizzard(point, Direction.WEST))
                     case other:
-                        assert other != "."
+                        assert other == "."
 
         width = len(lines[0]) - 2
         height = len(lines) - 2

@@ -11,7 +11,16 @@ class Direction(Enum):
     WEST = 4
 
 
-@dataclass
+@dataclass(frozen=True)
 class Blizzard:
     position: Point
     direction: Direction
+
+
+@dataclass(frozen=True)
+class Map:
+    blizzards: list[Blizzard]
+    start: Point
+    end: Point
+    width: int
+    height: int

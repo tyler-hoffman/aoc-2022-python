@@ -39,25 +39,18 @@ class QualityChecker:
         if key not in self.seen:
             self.seen.add(key)
 
-            could_get = self.robots_we_could_someday_afford(robots)
             remaining = self.max_time - minute
-            should_get: set[Resource] = set()
-            for r in Resource:
-                current_potential = resources[r] + (remaining + 0) * robots[r]
-                max_desired = (remaining + 0) * self.max_robots[r]
-                if current_potential < max_desired:
-                    should_get.add(r)
-
+            could_get = self.robots_we_could_someday_afford(robots)
+            should_get = self.should_get(remaining, resources, robots)
             to_do = could_get & should_get
-            if not to_do:
-                yield resources[Resource.GEODE] + remaining * robots[Resource.GEODE]
+
+            yield resources[Resource.GEODE] + remaining * robots[Resource.GEODE]
+
             for r in to_do:
                 time_to_buy = self.time_until_we_can_buy(r, resources, robots)
                 skip_time = time_to_buy + 1
                 new_minute = minute + skip_time
-                if new_minute >= self.max_time:
-                    yield resources[Resource.GEODE] + remaining * robots[Resource.GEODE]
-                else:
+                if new_minute < self.max_time:
                     cost = self.blueprint.robot_costs[r]
                     for robot_type, count in robots.items():
                         resources[robot_type] += count * skip_time
@@ -72,6 +65,20 @@ class QualityChecker:
                         resources[r2] += amt
                     for robot_type, count in robots.items():
                         resources[robot_type] -= count * skip_time
+
+    def should_get(
+        self,
+        minutes_remaining: int,
+        resources: ResourceMap,
+        robots: ResourceMap,
+    ) -> set[Resource]:
+        output: set[Resource] = set()
+        for r in Resource:
+            current_potential = resources[r] + minutes_remaining * robots[r]
+            max_desired = minutes_remaining * self.max_robots[r]
+            if current_potential < max_desired:
+                output.add(r)
+        return output
 
     def time_until_we_can_buy(
         self,

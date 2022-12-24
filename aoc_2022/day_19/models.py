@@ -13,13 +13,25 @@ class Resource(Enum):
     GEODE = 4
 
 
-def create_resource_map(ore=0, clay=0, obsidian=0, geode=0) -> Mapping[Resource, int]:
+ResourceMap = dict[Resource, int]
+
+
+def create_resource_map(ore=0, clay=0, obsidian=0, geode=0) -> ResourceMap:
     return {
         Resource.ORE: ore,
         Resource.CLAY: clay,
         Resource.OBSIDIAN: obsidian,
         Resource.GEODE: geode,
     }
+
+
+def tuplize(resource_map: ResourceMap) -> tuple[int, int, int, int]:
+    return (
+        resource_map[Resource.ORE],
+        resource_map[Resource.CLAY],
+        resource_map[Resource.OBSIDIAN],
+        resource_map[Resource.GEODE],
+    )
 
 
 @dataclass

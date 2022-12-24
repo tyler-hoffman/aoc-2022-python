@@ -1,5 +1,4 @@
 import re
-from typing import Mapping
 
 from aoc_2022.day_19.models import Blueprint, Resource, create_resource_map
 
@@ -10,10 +9,9 @@ class Parser(object):
     )
 
     @staticmethod
-    def parse(input: str) -> Mapping[int, Blueprint]:
+    def parse(input: str) -> list[Blueprint]:
         lines = input.strip().splitlines()
-        blueprints = [Parser.parse_line(line) for line in lines]
-        return {b.name: b for b in blueprints}
+        return [Parser.parse_line(line) for line in lines]
 
     @staticmethod
     def parse_line(line: str) -> Blueprint:

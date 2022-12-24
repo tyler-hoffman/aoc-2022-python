@@ -11,4 +11,4 @@ def test_solve():
 
 
 def test_my_solution():
-    assert get_solution() == "NOT THIS"
+    assert get_solution() == 1589

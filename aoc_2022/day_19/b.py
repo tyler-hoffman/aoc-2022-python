@@ -11,9 +11,13 @@ class Day19PartASolver:
 
     @property
     def solution(self) -> int:
-        quality_checkers = [QualityChecker(blueprint, 24) for blueprint in self.blueprints]
-        quality_levels = [quality_checker.level for quality_checker in quality_checkers]
-        return sum(quality_levels)
+        quality_checkers = [QualityChecker(blueprint, 32) for blueprint in self.blueprints[:3]]
+        max_geode_counts = [quality_checker.max_geodes for quality_checker in quality_checkers]
+
+        output = 1
+        for max_geode_count in max_geode_counts:
+            output *= max_geode_count
+        return output
 
 
 def solve(input: str) -> int:

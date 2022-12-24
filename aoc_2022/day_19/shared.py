@@ -1,6 +1,7 @@
 import math
 from dataclasses import dataclass, field
 from functools import cached_property
+from typing import Iterator
 
 from aoc_2022.day_19.models import (
     Blueprint,
@@ -15,7 +16,7 @@ from aoc_2022.day_19.models import (
 class QualityChecker:
     blueprint: Blueprint
     max_time: int
-    seen: dict[tuple, int] = field(default_factory=dict, init=False)
+    seen: set[tuple] = field(default_factory=set, init=False)
 
     @property
     def level(self) -> int:
@@ -25,53 +26,52 @@ class QualityChecker:
     def max_geodes(self) -> int:
         resources = create_resource_map()
         robots = create_resource_map(ore=1)
-        return self.get_max_geodes(0, resources, robots)
+        return max(self.get_max_geodes(0, resources, robots))
 
     def get_max_geodes(
-        self, minute: int, resources: ResourceMap, robots: ResourceMap,
-    ) -> int:
+        self,
+        minute: int,
+        resources: ResourceMap,
+        robots: ResourceMap,
+    ) -> Iterator[int]:
         key = (minute, tuplize(resources), tuplize(robots))
 
-        if key in self.seen:
-            return self.seen[key]
+        if key not in self.seen:
+            self.seen.add(key)
 
-        best = 0
-        
-        could_get = self.robots_we_could_someday_afford(robots)
-        remaining = self.max_time - minute
-        should_get: set[Resource] = set()
-        for r in Resource:
-            current_potential = resources[r] + remaining * robots[r]
-            max_desired = remaining * self.max_robots[r]
-            if current_potential < max_desired:
-                should_get.add(r)
-        to_do = could_get & should_get
-        for r in to_do:
-            time_to_buy = self.time_until_we_can_buy(r, resources, robots)
-            skip_time = time_to_buy + 1
-            new_minute = minute + skip_time
-            if new_minute >= self.max_time:
-                count = resources[Resource.GEODE] + remaining * robots[Resource.GEODE]
-                best = max(best, count)
-            else:
-                cost = self.blueprint.robot_costs[r]
-                for robot_type, count in robots.items():
-                    resources[robot_type] += count * skip_time
-                for r2, amt in cost.items():
-                    resources[r2] -= amt
-                robots[r] += 1
+            could_get = self.robots_we_could_someday_afford(robots)
+            remaining = self.max_time - minute
+            should_get: set[Resource] = set()
+            for r in Resource:
+                current_potential = resources[r] + (remaining + 0) * robots[r]
+                max_desired = (remaining + 0) * self.max_robots[r]
+                if current_potential < max_desired:
+                    should_get.add(r)
 
-                best_for_resource = self.get_max_geodes(new_minute, resources, robots)
-                best = max(best, best_for_resource)
+            to_do = could_get & should_get
+            if not to_do:
+                yield resources[Resource.GEODE] + remaining * robots[Resource.GEODE]
+            for r in to_do:
+                time_to_buy = self.time_until_we_can_buy(r, resources, robots)
+                skip_time = time_to_buy + 1
+                new_minute = minute + skip_time
+                if new_minute >= self.max_time:
+                    yield resources[Resource.GEODE] + remaining * robots[Resource.GEODE]
+                else:
+                    cost = self.blueprint.robot_costs[r]
+                    for robot_type, count in robots.items():
+                        resources[robot_type] += count * skip_time
+                    for r2, amt in cost.items():
+                        resources[r2] -= amt
+                    robots[r] += 1
 
-                robots[r] -= 1
-                for r2, amt in cost.items():
-                    resources[r2] += amt
-                for robot_type, count in robots.items():
-                    resources[robot_type] -= count * skip_time
+                    yield from self.get_max_geodes(new_minute, resources, robots)
 
-        self.seen[key] = best
-        return best
+                    robots[r] -= 1
+                    for r2, amt in cost.items():
+                        resources[r2] += amt
+                    for robot_type, count in robots.items():
+                        resources[robot_type] -= count * skip_time
 
     def time_until_we_can_buy(
         self,
@@ -79,16 +79,16 @@ class QualityChecker:
         resources: ResourceMap,
         robots: ResourceMap,
     ) -> int:
-        highest_time = 0
+        highest_time: float = 0
         cost = self.blueprint.robot_costs[robot_type]
         for r in Resource:
             if robots[r] == 0:
                 if cost[r] > 0:
                     raise Exception("WAT")
             else:
-                time = math.ceil((cost[r] - resources[r]) / robots[r])
+                time = (cost[r] - resources[r]) / robots[r]
                 highest_time = max(highest_time, time)
-        return highest_time
+        return math.ceil(highest_time)
 
     def robots_we_could_someday_afford(self, robots: ResourceMap) -> set[Resource]:
         output = {Resource.ORE, Resource.CLAY}
@@ -97,9 +97,6 @@ class QualityChecker:
         if robots[Resource.OBSIDIAN] > 0:
             output.add(Resource.GEODE)
         return output
-
-    def robots_under_the_max(self, robots: ResourceMap) -> set[Resource]:
-        return {r for r, amt in robots.items() if amt < self.max_robots[r]}
 
     @cached_property
     def max_robots(self) -> ResourceMap:

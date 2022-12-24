@@ -11,7 +11,9 @@ class Day19PartASolver:
 
     @property
     def solution(self) -> int:
-        quality_checkers = [QualityChecker(blueprint, 24) for blueprint in self.blueprints]
+        quality_checkers = [
+            QualityChecker(blueprint, 24) for blueprint in self.blueprints
+        ]
         quality_levels = [quality_checker.level for quality_checker in quality_checkers]
         return sum(quality_levels)
 

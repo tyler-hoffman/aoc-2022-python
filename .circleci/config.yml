@@ -16,6 +16,7 @@ jobs:
       - run: git-crypt unlock ~/git-crypt.key
       - run:
           name: Run tests
+          no_output_timeout: 30m
           command: poetry run pytest
   build-and-check-formatting:
     docker:

@@ -16,7 +16,7 @@ from aoc_2022.day_19.models import (
 class QualityChecker:
     blueprint: Blueprint
     max_time: int
-    seen: set[tuple] = field(default_factory=set, init=False)
+    seen: set[int] = field(default_factory=set, init=False)
 
     @property
     def level(self) -> int:
@@ -34,7 +34,7 @@ class QualityChecker:
         resources: ResourceMap,
         robots: ResourceMap,
     ) -> Iterator[int]:
-        key = (minute, tuplize(resources), tuplize(robots))
+        key = hash((minute, tuplize(resources), tuplize(robots)))
 
         if key not in self.seen:
             self.seen.add(key)
